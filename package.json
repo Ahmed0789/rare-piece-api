@@ -1,0 +1,20 @@
+{
+  "name": "hapi",
+  "version": "1.0.0",
+  "description": "hapi training",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "nodemon src/server/server.js",
+    "test": "ng test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/cookie": "^12.0.1",
+    "@hapi/hapi": "^21.3.10",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "mongoose": "^8.6.0"
+  }
+}
