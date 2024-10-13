@@ -22,3 +22,7 @@ Core delivery platform Node.js API Template.
 
 Please install [Node.js](http://nodejs.org/) `>= v18` and [npm](https://nodejs.org/) `>= v9`. You will find it
 easier to use the Node Version Manager [nvm](https://github.com/creationix/nvm)
+
+### Run locally 
+
+```npm run start```

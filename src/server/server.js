@@ -1,8 +1,8 @@
 import Hapi from '@hapi/hapi';
-import mongoose from 'mongoose';
 import { config } from '../config/index.js';
 import { configureAuth } from '../plugins/authStrategy.js';
 import authRoutes from '../routes/authRoutes.js';
+import sequelize from '../config/database.js';
 
 const init = async () => {
   const server = Hapi.server({
@@ -10,15 +10,14 @@ const init = async () => {
     host: config.server.host,
   });
 
-  // Connect to MongoDB
-  mongoose.connect(config.database.uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }).then(() => {
-    console.log('Connected to MongoDB');
-  }).catch(err => {
-    console.error('MongoDB connection error:', err);
-  });
+  try {
+    await sequelize.authenticate();
+    console.log('MySQL connection has been established successfully.');
+    await sequelize.sync();  // Sync the models to the database
+    console.log('Database synced.');
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+  }
 
   // Register auth strategy
   await configureAuth(server);
