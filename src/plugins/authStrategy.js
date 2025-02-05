@@ -1,6 +1,5 @@
 import HapiAuthCookie from '@hapi/cookie';
 import { config } from '../config/index.js';
-import UserModel from '../models/userModel.js';
 
 export const configureAuth = async (server) => {
   await server.register(HapiAuthCookie);
