@@ -1,15 +1,8 @@
 // src/controllers/authController.js
 import bcrypt from 'bcryptjs';
 import User from '../models/userModel.js';
-import jwt from 'jsonwebtoken';
-import { config } from '../config/index.js';
-
-// Function to generate JWT token
-const generateToken = (user) => {
-  return jwt.sign({ id: user.id, username: user.username }, config.auth.jwt.secret, {
-    expiresIn: config.auth.jwt.expiration,
-  });
-};
+import UserProfile from '../models/userProfile.js'
+import { generateToken, tokenBlacklist } from '../helpers/jwt/jwt-gen-token.js';
 
 // Email validation function
 const isValidEmail = (email) => {
@@ -19,33 +12,30 @@ const isValidEmail = (email) => {
 
 export const register = async (request, h) => {
   try {
-    const { username, password } = request.payload;
-
+    const { firstname, lastname, username, password } = request.payload;
     // 1. Validate required fields
     if (!username || !password) {
       return h.response({ message: 'Username and password are required.' }).code(422);
     }
-
     // 2. Validate email format
     if (!isValidEmail(username)) {
       return h.response({ message: 'Invalid email format.' }).code(400);
     }
-
     // 3. Check if user exists
     const existingUser = await User.findOne({ where: { username } });
     if (existingUser) {
       return h.response({ message: 'Account already exists with this email.' }).code(409);
     }
-
     // 4. Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ username, password: hashedPassword });
-
-    const token = generateToken(newUser);
     // 5. Create the user
-    await User.create({ username, password: hashedPassword });
-
-    return h.response({ message: 'User registered successfully', token }).code(201);
+    const newUser = await User.create({ firstname, lastname, username, password: hashedPassword });
+    // 6. create new UserProfile
+    await UserProfile.create({ user_id: newUser.id });
+    // 7. JWT token
+    const token = generateToken(newUser, false);
+    // Success response with message, jwt token and new user info
+    return h.response({ message: 'User registered successfully', token, newUser }).code(201);
   } catch (error) {
     console.error('Registration error:', error);
     return h.response({ message: 'User registration failed.', error: error.message }).code(500);
@@ -83,6 +73,10 @@ export const login = async (request, h) => {
 export const logout = (request, h) => {
   try {
   //request.cookieAuth.clear();
+  const token = request.headers.authorization?.split(' ')[1];
+  if (token) {
+    tokenBlacklist.add(token);
+  }
   return h.response({ message: 'Logged out successfully' }).code(200);
   } catch(e) {
     console.log('Error occured during logout. ' + e)
@@ -90,17 +84,16 @@ export const logout = (request, h) => {
   }
 };
 
-// Get a user by username
-export const getUserByUsername = async (request, h) => {
-  const { username } = request.params;
-
+// Get a user by id
+export const getUserById = async (request, h) => {
+  const id = request.auth.credentials.userId;
+  console.log(id, request.auth.credentials.userId)
   try {
-    const user = await User.findOne({ where: { username } });
+    const user = await User.findOne({ where: { id } });
 
     if (!user) {
       return h.response({ message: 'User not found' }).code(404);
     }
-
     return h.response({ user }).code(200);
   } catch (error) {
     return h.response({ message: error.message }).code(400);

@@ -1,0 +1,12 @@
+services:
+    app:
+        build:
+         context: .
+         dockerfile: Dockerfile
+        volumes:
+            - .:/home/node/app:cached
+        ports:
+            - 3000:80
+        environment:
+          - NODE_ENV=development
+          #  - NO_PROXY=rp-e2e-test01,mysqldev100

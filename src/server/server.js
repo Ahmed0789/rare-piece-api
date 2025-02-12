@@ -4,8 +4,10 @@ import { configureAuth } from '../plugins/authStrategy.js';
 import authRoutes from '../routes/authRoutes.js';
 import sequelize from '../config/database.js';
 import sneakerRoutes from '../routes/sneakerRoutes.js';
+import adminRoutes from '../routes/adminRoutes.js';
 import Jwt from '@hapi/jwt';
 import RateLimit from 'hapi-rate-limit';
+import { tokenBlacklist } from '../helpers/jwt/jwt-gen-token.js';
 
 const init = async () => {
   const server = Hapi.server({
@@ -34,6 +36,9 @@ const init = async () => {
       maxAgeSec: 86400, // 24 hours
     },
     validate: async (artifacts, request, h) => {
+      if (tokenBlacklist.has(artifacts.token)) {
+        return { isValid: false };
+      }
       return { isValid: true, credentials: { userId: artifacts.decoded.payload.id } };
     },
   });
@@ -45,7 +50,7 @@ const init = async () => {
   //await configureAuth(server);
 
   // Register routes
-  server.route([...authRoutes, ...sneakerRoutes]);
+  server.route([...authRoutes, ...sneakerRoutes, ...adminRoutes]);
 
   await server.start();
   console.log(`Server running on ${server.info.uri}`);
