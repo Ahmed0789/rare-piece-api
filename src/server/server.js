@@ -13,6 +13,14 @@ const init = async () => {
   const server = Hapi.server({
     port: config.server.port,
     host: config.server.host,
+    routes: {
+      cors: {
+          origin: ['http://localhost:4200'], // Allow only your Angular frontend
+          credentials: true, // Allow cookies and authentication headers
+          headers: ['Accept', 'Content-Type', 'Authorization'], // Allowed headers
+          exposedHeaders: ['Authorization'], // Headers accessible to the client
+      }
+  }
   });
 
   try {

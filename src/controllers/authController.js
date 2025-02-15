@@ -12,10 +12,14 @@ const isValidEmail = (email) => {
 
 export const register = async (request, h) => {
   try {
+    if (!request.payload?.username) {
+      return h.response({ message: 'No Payload, potential misuse to report.' }).code(403);
+    }
+
     const { firstname, lastname, username, password } = request.payload;
     // 1. Validate required fields
-    if (!username || !password) {
-      return h.response({ message: 'Username and password are required.' }).code(422);
+    if (!firstname || !username || !password) {
+      return h.response({ message: 'firstname, Username (email) and password are required.' }).code(422);
     }
     // 2. Validate email format
     if (!isValidEmail(username)) {
@@ -61,9 +65,9 @@ export const login = async (request, h) => {
       return h.response({ message: 'Invalid credentials' }).code(401);
     }
     // Generate JWT token
-    const token = generateToken(user);
+    const token = generateToken(user, false);
 
-    return h.response({ message: 'Logged in successfully', token }).code(200);
+    return h.response({ message: 'Logged in successfully', token, user }).code(200);
   } catch (error) {
     console.error('Login error:', error);
     return h.response({ message: 'Login failed.', error: error.message }).code(500);
@@ -81,6 +85,26 @@ export const logout = (request, h) => {
   } catch(e) {
     console.log('Error occured during logout. ' + e)
     return h.response({ message: e }).code(500);
+  }
+};
+
+export const checkUserSession = async (request, h) => {
+  try {
+    // Extract token from request headers
+    const token = request.headers.authorization?.split(' ')[1];
+    if (!token) return h.response({ message: 'Unauthorized' }).code(401);
+
+    // Verify JWT token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findByPk(decoded.id);
+    if (!user) return h.response({ message: 'User not found' }).code(404);
+
+    // Generate a new token to extend session
+    const newToken = generateToken(user, false);
+
+    return h.response({ loggedIn: true, newToken }).code(200);
+  } catch (err) {
+    return h.response({ loggedIn: false, message: 'Session expired or invalid token' }).code(401);
   }
 };
 

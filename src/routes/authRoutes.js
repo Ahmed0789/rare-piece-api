@@ -1,4 +1,4 @@
-import { register, login, logout, getUserById } from '../controllers/authController.js';
+import { register, login, logout, checkUserSession, getUserById } from '../controllers/authController.js';
 import { applyReseller, updateUserProfile } from '../controllers/userController.js'
 
 export default [
@@ -17,6 +17,14 @@ export default [
       auth: false, // Public route (no authentication required)
       plugins: {
         'hapi-rate-limit': { pathLimit: 3, pathCache: { expiresIn: 60 * 1000 } }, // Limit: 5 requests per minute
+      },
+    }
+  },
+  { method: 'GET', path: '/auth/status', handler: checkUserSession,
+    options: {
+      auth: 'jwt', // Public route (no authentication required)
+      plugins: {
+        'hapi-rate-limit': { pathLimit: 10, pathCache: { expiresIn: 60 * 1000 } }, // Limit: 5 requests per minute
       },
     }
   },
@@ -47,7 +55,7 @@ export default [
     },
   },
   {
-    method: 'POST', path: '/reseller/apply', handler: applyReseller, options: {
+    method: 'POST', path: '/reseller_verification', handler: applyReseller, options: {
       auth: 'jwt',
       plugins: {
         'hapi-rate-limit': { pathLimit: 10, pathCache: { expiresIn: 60 * 1000 } }, // Limit: 10 requests per minute
