@@ -1,5 +1,5 @@
 import { register, login, logout, checkUserSession, getUserById } from '../controllers/authController.js';
-import { applyReseller, updateUserProfile } from '../controllers/userController.js'
+import { applyReseller, checkVerificationStatus, updateUserProfile } from '../controllers/userController.js'
 
 export default [
   {
@@ -33,7 +33,7 @@ export default [
     options: {
       auth: 'jwt',
       plugins: {
-        'hapi-rate-limit': { pathLimit: 10, pathCache: { expiresIn: 60 * 1000 } }, // Limit: 10 requests per minute
+        'hapi-rate-limit': { pathLimit: 10, pathCache: { expiresIn: 60 * 1000 } },
       },
     }
   },
@@ -42,7 +42,7 @@ export default [
     options: {
       auth: 'jwt',
       plugins: {
-        'hapi-rate-limit': { pathLimit: 10, pathCache: { expiresIn: 60 * 1000 } }, // Limit: 10 requests per minute
+        'hapi-rate-limit': { pathLimit: 10, pathCache: { expiresIn: 60 * 1000 } },
       },
     },
   },
@@ -50,7 +50,7 @@ export default [
     method: 'PUT', path: '/profile', handler: updateUserProfile, options: {
       auth: 'jwt',
       plugins: {
-        'hapi-rate-limit': { pathLimit: 10, pathCache: { expiresIn: 60 * 1000 } }, // Limit: 10 requests per minute
+        'hapi-rate-limit': { pathLimit: 10, pathCache: { expiresIn: 60 * 1000 } },
       },
     },
   },
@@ -58,7 +58,15 @@ export default [
     method: 'POST', path: '/reseller_verification', handler: applyReseller, options: {
       auth: 'jwt',
       plugins: {
-        'hapi-rate-limit': { pathLimit: 10, pathCache: { expiresIn: 60 * 1000 } }, // Limit: 10 requests per minute
+        'hapi-rate-limit': { pathLimit: 4, pathCache: { expiresIn: 60 * 1000 } },
+      },
+    },
+  },
+  {
+    method: 'GET', path: '/reseller_verification/status', handler: checkVerificationStatus, options: {
+      auth: 'jwt',
+      plugins: {
+        'hapi-rate-limit': { pathLimit: 4, pathCache: { expiresIn: 60 * 1000 } },
       },
     },
   }

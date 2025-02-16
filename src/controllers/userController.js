@@ -19,6 +19,21 @@ export const applyReseller = async (request, h) => {
     return h.response({ message: error.message }).code(500);
   }
 };
+export const checkVerificationStatus = async (request, h) => {
+  try {
+    const user_id = request.auth.credentials.id;
+
+    const requestExists = await ResellerRequest.findOne({ where: { user_id, status: 'pending' } });
+
+    if (!requestExists) {
+      return h.response({ message: 'Reseller request doesn\'t exist' }).code(404);
+    }
+
+    return h.response({ message: 'Reseller request submitted' }).code(302);
+  } catch (error) {
+    return h.response({ message: error.message }).code(500);
+  }
+};
 export const updateUserProfile = async (request, h) => {
     try {
         const user_id = request.auth.credentials.id;
