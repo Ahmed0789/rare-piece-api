@@ -5,8 +5,13 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "start": "nodemon src/server/server.js",
-    "test": "ng test"
+    "start:dev": "nodemon --exec node src/server/server.js",
+    "start:testqa": "NODE_ENV=testqa node src/server/server.js",
+    "start:stage": "NODE_ENV=staging node src/server/server.js",
+    "start:prod": "NODE_ENV=production node src/server/server.js",
+    "docker:build": "docker build -t myapi .",
+    "docker:run": "docker run -p 3000:3000 --env-file .env myapi",
+    "test": "nodemon --exec node src/tests/index.js"
   },
   "author": "",
   "license": "ISC",
