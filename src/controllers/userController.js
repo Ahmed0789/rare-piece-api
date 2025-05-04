@@ -21,7 +21,7 @@ export const applyReseller = async (request, h) => {
 
     const existingUser = await User.findOne({ where: { user_id } });
     const existingUserProfile = await UserProfile.findOne({ where: { user_id } });
-    
+
     if (existingUser && existingUserProfile) {
       existingUser.update({ firstname: firstname, lastname: lastname });
       existingUserProfile.update({ dob: dob, gender: gender, billing_address: billing_added, mobile_number: mobile_number });
@@ -50,14 +50,14 @@ export const checkVerificationStatus = async (request, h) => {
   }
 };
 export const updateUserProfile = async (request, h) => {
-    try {
-        const user_id = request.auth.credentials.id;
-        const { mobile_number, billing_address } = request.payload;
+  try {
+    const user_id = request.auth.credentials.id;
+    const { mobile_number, billing_address } = request.payload;
 
-        await UserProfile.update({ mobile_number, billing_address }, { where: { user_id } });
+    await UserProfile.update({ mobile_number, billing_address }, { where: { user_id } });
 
-        return h.response({ message: 'Profile updated' }).code(200);
-    } catch (error) {
-        return h.response({ message: error.message }).code(500);
-    }
+    return h.response({ message: 'Profile updated' }).code(200);
+  } catch (error) {
+    return h.response({ message: error.message }).code(500);
+  }
 };

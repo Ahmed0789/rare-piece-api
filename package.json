@@ -1,7 +1,7 @@
 {
-  "name": "hapi",
-  "version": "1.0.0",
-  "description": "hapi training",
+  "name": "rare-piece-api",
+  "version": "1.1.0",
+  "description": "Rare Piece API",
   "type": "module",
   "main": "src/index.js",
   "scripts": {
