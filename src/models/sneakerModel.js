@@ -1,21 +1,12 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 
-// Define the User model
-const Sneakers = sequelize.define('User', {
+// Define the Sneaker model
+const Sneaker = sequelize.define('Sneaker', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
-    },
-    username: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-    },
-    password: {
-        type: DataTypes.STRING,
-        allowNull: false,
     },
     created_at: {
         type: DataTypes.DATE,
@@ -116,7 +107,7 @@ const Sneakers = sequelize.define('User', {
     }
 }, {
     timestamps: false,
-    tableName: 'Users',
+    tableName: 'Sneaker',
 });
 
-export default Sneakers;
+export default Sneaker;

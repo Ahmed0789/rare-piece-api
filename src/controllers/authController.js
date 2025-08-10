@@ -104,7 +104,8 @@ export const checkUserSession = async (request, h) => {
 
     return h.response({ loggedIn: true, newToken }).code(200);
   } catch (err) {
-    return h.response({ loggedIn: false, message: 'Session expired or invalid token' }).code(401);
+    h.response({ loggedIn: false, message: 'Session expired or invalid token' }).code(401);
+    throw new Error(err);
   }
 };
 
