@@ -72,5 +72,13 @@ export default [
             },
         }
     },
-
+    {
+        method: 'GET', path: '/health',
+        options: {
+            tags: ['api'],           // helps Swagger list the route
+            description: 'Health check',
+            notes: 'Returns server health status'
+        },
+        handler: () => ({ status: 'ok' })
+    }
 ];

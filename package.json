@@ -17,16 +17,22 @@
   "license": "ISC",
   "dependencies": {
     "@hapi/cookie": "^12.0.1",
-    "@hapi/hapi": "^21.3.10",
+    "@hapi/hapi": "^21.4.2",
+    "@hapi/inert": "^7.1.0",
     "@hapi/jwt": "^3.2.0",
-    "bcryptjs": "^2.4.3",
+    "@hapi/vision": "^7.0.3",
+    "axios": "^1.9.0",
+    "bcryptjs": "^3.0.2",
+    "cheerio": "^1.0.0",
     "dotenv": "^16.4.5",
-    "hapi-rate-limit": "^5.0.1",
+    "hapi-rate-limit": "^8.0.0",
+    "hapi-swagger": "^17.3.2",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.11.3",
-    "sequelize": "^6.37.4"
+    "mysql2": "^3.14.3",
+    "puppeteer": "^24.9.0",
+    "sequelize": "^6.37.7"
   },
   "devDependencies": {
-    "@types/jsonwebtoken": "^9.0.8"
+    "@types/jsonwebtoken": "^9.0.10"
   }
 }
