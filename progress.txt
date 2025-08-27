@@ -1,0 +1,45 @@
+Summary of changes and migration responsibilities:
+
+Routes & Controllers updated/added
+Register route (/register)
+Now validates payload with Joi and persists email_verified=false, phone (optional), phone_verified=false, last_ip.
+Creates VerificationToken (type=email) and sends verification code via EmailService; sends SMS verification if phone provided.
+Creates UserProfile.
+Login route (/login)
+Now checks credentials and email_verified; detects new device/IP and requires MFA when needed.
+If no MFA required: updates last_ip, last_login; issues JWT token.
+If MFA required: creates VerificationToken (type=mfa) with temp_token and code, sends code by email and/or SMS, returns 202 with tempToken and available methods.
+MFA routes
+POST /mfa/verify — verifies MFA code, updates last_ip/last_login, marks token consumed, optionally marks TrustedDevice, issues full JWT token.
+POST /mfa/resend — resends MFA code.
+Verification routes
+POST /verify/email — consumes email verification token and marks user.email_verified true, issues token.
+POST /verify/phone — consumes phone verification token and marks user.phone_verified true, issues token.
+POST /verify/email/resend — send new email verification code (rate-limited).
+POST /verify/phone/resend — send new phone verification code (rate-limited).
+GET /user/trusted-devices — list trusted devices (requires JWT).
+DELETE /user/trusted-devices/{deviceId} — remove trusted device (requires JWT).
+New Models / DB tables
+verification_tokens (new table)
+Columns: id, user_id (FK), type (enum), code, temp_token (for MFA), expires_at, consumed, consumed_at, ip_address, device_fingerprint, attempts, max_attempts, timestamps.
+Created indexes on user_id, type, temp_token, expires_at, consumed.
+trusted_devices (new table)
+Columns: id, user_id, device_fingerprint, device_name, ip_address, user_agent, trusted_at, last_used, is_active, timestamps.
+Updates to Users table (added columns)
+email_verified (boolean, default false)
+email_verified_at (date)
+phone (string)
+phone_verified (boolean, default false)
+phone_verified_at (date)
+last_ip (string)
+last_login (date)
+mfa_enabled (boolean, default true)
+Services added
+EmailService: sendVerification, sendMFACode, sendPasswordReset (nodemailer)
+SMSService: sendVerification, sendMFACode (Twilio or AWS SNS)
+Migration file created
+migrations/20250824-create-verification-and-trusted-devices.js
+Adds new columns to Users table
+Creates verification_tokens and trusted_devices tables
+Adds indexes
+Down migration removes tables and columns, and drops ENUM type for Postgres

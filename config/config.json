@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "rp-test-user",
+    "password": "Y(Taz0J)b1o3dpkI",
+    "database": "RarePieceTest",
+    "host": "localhost",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "RarePieceTest",
+    "host": "localhost:3306",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
