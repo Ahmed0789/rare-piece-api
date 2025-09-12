@@ -69,14 +69,20 @@ CREATE TABLE Users (
 ## Authentication Routes
 All authentication routes use **JWT-based authentication** and **rate limiting**.
 
+## Routs
+The detailed routs may change and become outdated, to refer to any newer ones run the api and go to localhost:3000/documentation
+
 ### 1. User Registration
-**Endpoint:** `POST /register`
+**Endpoint:** `POST api/v1/register`
 
 **Request Body:**
 ```json
 {
-  "username": "test@example.com",
-  "password": "SecurePass123"
+  "firstname": "Jane",
+  "lastname": "Doe",
+  "username": "jane@example.com",
+  "password": "StrongP@ssw0rd",
+  "phone": "+15551234567"
 }
 ```
 
@@ -88,7 +94,7 @@ All authentication routes use **JWT-based authentication** and **rate limiting**
 ---
 
 ### 2. User Login
-**Endpoint:** `POST /login`
+**Endpoint:** `POST api/v1/login`
 
 **Request Body:**
 ```json
@@ -106,7 +112,7 @@ All authentication routes use **JWT-based authentication** and **rate limiting**
 ---
 
 ### 3. User Logout
-**Endpoint:** `POST /logout`
+**Endpoint:** `POST api/v1/logout`
 
 **Headers:**
 ```http
@@ -119,7 +125,7 @@ Authorization: Bearer <JWT_TOKEN>
 ---
 
 ### 4. Get User Profile
-**Endpoint:** `GET /profile`
+**Endpoint:** `GET api/v1/profile`
 
 **Headers:**
 ```http
