@@ -7,6 +7,8 @@ import VerificationToken from '../models/verificationToken.js';
 import ResellerRequest from '../models/resellerRequestModel.js';
 
 import { generateToken } from '../helpers/jwt/jwt-gen-token.js';
+import { getClientIp, generateVerificationCode } from '../utils/clientHelper.js';
+
 import EmailService from '../services/emailService.js';
 import SMSService from '../services/smsService.js';
 
