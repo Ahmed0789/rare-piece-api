@@ -1,12 +1,14 @@
-import { backupAndResetUsers, adminLogin, adminLogout, getUserByUsername, verifyReseller } from '../controllers/adminController.js';
+import { backupAndResetUsers, adminLogin, adminLogout, getUserByUsername, verifyReseller, adminDisableUser } from '../controllers/adminController.js';
+import { markUsersAsRemoved, deleteRemovedUsers } from '../controllers/scheduledTasks.js';
+
 import { isAdmin } from '../middleware/adminAuth.js';
 import { createAdminUser } from '../helpers/db/seeder.js';
 
 export default [
     {
-      method: 'GET',
-      path: '',
-      handler: (request, h) => h.redirect('/documentation').code(302)
+        method: 'GET',
+        path: '',
+        handler: (request, h) => h.redirect('/documentation').code(302)
     },
     {
         method: 'POST', path: '/a-login', handler: adminLogin,
@@ -81,6 +83,41 @@ export default [
                 'hapi-rate-limit': { pathLimit: 5, pathCache: { expiresIn: 60 * 1000 } }, // Limit: 5 requests per minute
             },
         }
+    },
+    {
+        method: 'POST',
+        path: '/admin/disable-user/{userId}',
+        handler: adminDisableUser,
+        options: {
+            auth: 'jwt',
+            pre: [isAdmin],  // Only admins can access
+            tags: ['api', 'v1', 'admin'],
+            plugins: {
+                'hapi-rate-limit': { pathLimit: 5, pathCache: { expiresIn: 60 * 1000 } }, // Limit: 5 requests per minute
+            },
+            description: 'Disable user account',
+            notes: 'Returns success message'
+        }
+    },
+    {
+        method: 'POST',
+        path: '/tasks/mark-removed',
+        options: {
+            tags: ['api', 'v1', 'admin'],
+            description: 'Scheduled task helper - mark removed=true for accounts disabled for over 28 days',
+            notes: 'Runs as part of scheduled task once everyday'
+        },
+        handler: markUsersAsRemoved
+    },
+    {
+        method: 'POST',
+        path: '/tasks/delete-removed-users',
+        options: {
+            tags: ['api', 'v1', 'admin'],
+            description: 'Scheduled task helper - deleted user accounts marked removed=true',
+            notes: 'Runs as part of scheduled task once everyday'
+        },
+        handler: deleteRemovedUsers
     },
     {
         method: 'GET', path: '/health',

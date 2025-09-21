@@ -7,7 +7,7 @@ const UserProfile = sequelize.define('UserProfile', {
     dob: { type: DataTypes.STRING, allowNull: true },
     gender: { type: DataTypes.STRING, allowNull: true },
     billing_address: { type: DataTypes.TEXT, allowNull: true },
-    mobile_number: { type: DataTypes.STRING, allowNull: true },
+    phone: { type: DataTypes.STRING, allowNull: true },
 }, { timestamps: true });
 
 export default UserProfile;

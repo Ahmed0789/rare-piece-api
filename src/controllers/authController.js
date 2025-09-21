@@ -96,6 +96,16 @@ export const login = async (request, h) => {
       }).code(403);
     }
 
+    // Check if user account is disabled (from user request)
+    if (user.disabled && user.disableReason === 'user_request' && !user.removed) {
+      return h.response({ message: 'Your account is disabled. Would you like to restore it?', restorable: true }).code(403)
+    }
+
+    // Check if user account is disabled (security)
+    if (user.disabled && user.disableReason === 'security' && !user.removed) {
+      return h.response({ message: 'Your account is disabled for security reason.', restorable: false }).code(403);
+    }
+
     // Check if MFA is required (new device/IP)
     const requiresMFA = await isNewDevice(user.id, currentIp, deviceFingerprint);
 

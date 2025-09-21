@@ -127,7 +127,7 @@ export const applyReseller = async (request, h) => {
   try {
     const user_id = request.auth.credentials.userId;
 
-    const { firstname, lastname, dob, gender, billing_added, id_type, id_document, mobile_number } = request.payload;
+    const { firstname, lastname, dob, gender, billing_added, id_type, id_document, phone } = request.payload;
 
     const requestExists = await ResellerRequest.findOne({ where: { user_id, status: 'pending' } });
 
@@ -146,7 +146,7 @@ export const applyReseller = async (request, h) => {
 
     if (existingUser && existingUserProfile) {
       existingUser.update({ firstname: firstname, lastname: lastname });
-      existingUserProfile.update({ dob: dob, gender: gender, billing_address: billing_added, mobile_number: mobile_number });
+      existingUserProfile.update({ dob: dob, gender: gender, billing_address: billing_added, phone: phone });
     } else {
       return h.response({ message: 'User has not registered.' }).code(422);
     }
@@ -156,6 +156,19 @@ export const applyReseller = async (request, h) => {
     return h.response({ message: error.message }).code(500);
   }
 };
+
+export const disableUser = async (request, h) => {
+  const userId = request.auth.credentials.id;
+
+  await User.findByIdAndUpdate(userId, {
+    disabled: true,
+    disableReason: 'user_request',
+    disabledAt: new Date()
+  });
+
+  return h.response({ message: 'Account disabled. You have 28 days to restore.' });
+};
+
 export const checkVerificationStatus = async (request, h) => {
   try {
     const user_id = request.auth.credentials.id;
@@ -171,12 +184,13 @@ export const checkVerificationStatus = async (request, h) => {
     return h.response({ message: error.message }).code(500);
   }
 };
+
 export const updateUserProfile = async (request, h) => {
   try {
     const user_id = request.auth.credentials.id;
-    const { mobile_number, billing_address } = request.payload;
+    const { phone, billing_address } = request.payload;
 
-    await UserProfile.update({ mobile_number, billing_address }, { where: { user_id } });
+    await UserProfile.update({ phone, billing_address }, { where: { user_id } });
 
     return h.response({ message: 'Profile updated' }).code(200);
   } catch (error) {

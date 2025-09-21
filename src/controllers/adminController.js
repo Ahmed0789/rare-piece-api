@@ -101,3 +101,15 @@ export const verifyReseller = async (request, h) => {
     return h.response({ message: error.message }).code(500);
   }
 };
+
+export const adminDisableUser = async (request, h) => {
+  const { userId } = request.params;
+
+  await User.findByIdAndUpdate(userId, {
+    disabled: true,
+    disableReason: 'security',
+    disabledAt: new Date()
+  });
+
+  return h.response({ message: 'User account disabled by admin.' });
+};

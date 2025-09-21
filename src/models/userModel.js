@@ -49,6 +49,28 @@ const User = sequelize.define('User', {
     type: DataTypes.BOOLEAN,
     defaultValue: true,
     comment: 'Whether MFA is enabled for this user'
+  },
+  disabled: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    comment: 'Whether user account is disabled'
+  },
+  removed: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    comment: 'Whether user account is marked to be deleted'
+  },
+  disableReason: {
+    type: DataTypes.STRING,
+    enum: ['user_request', 'security'],
+    defaultValue: null,
+    comment: 'Reason for account disabled'
+  },
+  disableAt: {
+    type: DataTypes.DATE,
+    enum: ['user_request', 'security'],
+    defaultValue: null,
+    comment: 'Date of account being disabled'
   }
 }, {
   timestamps: false,

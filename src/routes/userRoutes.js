@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import { getUserById } from '../controllers/authController.js';
-import { register, applyReseller, checkVerificationStatus, updateUserProfile } from '../controllers/userController.js'
+import { register, applyReseller, checkVerificationStatus, disableUser, updateUserProfile } from '../controllers/userController.js'
 
 // Joi schemas (used for validation + swagger examples)
 const registerPayloadSchema = Joi.object({
@@ -94,5 +94,19 @@ export default [
             tags: ['api', 'v1', 'user', 'reseller'],
             description: 'Check reseller registration status',
         },
+    },
+    {
+        method: 'POST',
+        path: '/user/disable',
+        handler: disableUser,
+        options: {
+            auth: 'jwt',
+            plugins: {
+                'hapi-rate-limit': { pathLimit: 2, pathCache: { expiresIn: 60 * 1000 } },
+            },
+            tags: ['api', 'v1', 'user', 'reseller'],
+            description: 'Delete user account',
+            notes: 'Request to delete account, restore within 28 days'
+        }
     }
 ];
